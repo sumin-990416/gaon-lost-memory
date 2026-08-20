@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#11172b" />
+    <title>가온: 잃어버린 기억</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-mark">ㄱ</span>
+          <div><strong>가온</strong><small>잃어버린 기억</small></div>
+        </div>
+        <div class="stage-title"><span id="stageNumber">기억 01</span> <b id="stageName">깨어난 목소리</b></div>
+        <div class="profile">
+          <span id="globalAiStatus" class="global-ai-status checking"><i></i> AI 확인 중</span>
+          <button id="restartStage" class="restart-button" aria-label="스테이지 새로고침">↻ 스테이지 새로고침</button>
+          <span id="profileName">새 모험가</span><button id="changeProfile" class="icon-button" aria-label="프로필 변경">↻</button>
+        </div>
+      </header>
+
+      <section class="game-layout">
+        <div class="game-column">
+          <div class="canvas-wrap">
+            <canvas id="game" width="960" height="540" aria-label="2D 플랫폼 게임"></canvas>
+            <div class="inventory canvas-inventory">
+              <div class="section-title"><span>도구</span><small>선택하면 코드에 추가</small></div>
+              <div class="items">
+                <button class="item platform-item" data-item="platform" data-prompt="짧은 절벽에 휴대용 발판을 설치하고 건너가.">
+                  <span class="item-icon platform-icon"></span><span><strong>휴대용 발판</strong><em>짧은 틈 연결</em><small>남은 수량 <b id="platformCount">1</b></small></span>
+                </button>
+                <button class="item rope-item" data-item="rope" data-prompt="넓은 절벽에 기억의 밧줄을 연결하고 건너가.">
+                  <span class="item-icon rope-icon">≈</span><span><strong>기억의 밧줄</strong><em>넓은 틈 연결</em><small>남은 수량 <b id="ropeCount">1</b></small></span>
+                </button>
+                <button class="item ladder-item" data-item="ladder" data-prompt="높은 벽에 접이식 사다리를 설치하고 위로 올라가.">
+                  <span class="item-icon ladder-icon">╫</span><span><strong>접이식 사다리</strong><em>높은 곳 오르기</em><small>남은 수량 <b id="ladderCount">1</b></small></span>
+                </button>
+              </div>
+            </div>
+            <div id="toast" class="toast" aria-live="polite"></div>
+            <div id="completePanel" class="complete-panel hidden">
+              <span class="eyebrow">기억 복원 완료</span>
+              <h2 id="memoryReward">“함께”라는 말을 되찾았습니다.</h2>
+              <p id="completeStory">가온은 혼자서는 건널 수 없던 길을 당신의 말로 이해했습니다.</p>
+              <div class="complete-actions"><button id="replayButton" class="secondary-button">다시 플레이</button><button id="nextStageButton" class="primary-button">다음 스테이지</button></div>
+            </div>
+          </div>
+          <div class="controls-bar">
+            <span>모든 행동은 가온에게 말해서 실행합니다</span>
+            <span>예시 · “첫 절벽 앞까지 가서 발판을 설치하고 건너가”</span>
+            <span class="objective">목표 · 오른쪽의 기억 조각에 도착하기</span>
+          </div>
+        </div>
+
+        <aside class="ai-panel">
+          <div class="ai-heading">
+            <div class="ai-avatar"><span></span></div>
+            <div><strong>가온 코드실</strong><small id="aiState">명령을 기다리고 있어요</small></div>
+            <button id="openHistory" class="history-button">기록 보기</button>
+          </div>
+
+          <div class="editor-intro">
+            <div><span class="eyebrow">STAGE PROGRAM</span><h2>가온에게 행동을 설계하세요</h2></div>
+            <div class="command-limit"><span>남은 실행</span><strong id="commandRemaining">3</strong><small id="commandTotal">/ 3</small></div>
+          </div>
+
+          <div class="stage-guide">
+            <span>이번 스테이지 목표</span>
+            <p id="stageObjective">절벽을 연결하고 오른쪽의 기억 조각까지 이동하세요.</p>
+            <small>한 번의 명령에 여러 행동을 순서대로 작성할 수 있습니다.</small>
+          </div>
+
+          <form id="commandForm" class="command-box">
+            <div class="editor-bar"><span>작전.gaon</span><span id="aiConnection" class="online-dot">Solar 4</span></div>
+            <label for="commandInput">01</label>
+            <textarea id="commandInput" rows="4" maxlength="50" placeholder="50자 안에 가온의 행동을 설계하세요."></textarea>
+            <div class="command-footer">
+              <button type="button" id="hintButton" class="text-button">힌트 보기</button>
+              <span id="charCount">0 / 50</span>
+            </div>
+            <button type="submit" class="run-button"><span>▶</span> 동작 실행</button>
+          </form>
+
+          <div id="compilerOutput" class="compiler-output">
+            <span class="eyebrow">가온의 해석 결과</span>
+            <p>코드를 작성하고 동작 실행을 눌러 주세요.</p>
+          </div>
+
+        </aside>
+      </section>
+    </main>
+
+    <dialog id="historyDialog" class="history-dialog">
+      <div class="history-head"><div><span class="eyebrow">실행 기록</span><h2>가온과 나눈 작전</h2></div><button id="closeHistory" class="icon-button">×</button></div>
+      <div id="chatLog" class="chat-log" aria-live="polite">
+        <div class="message ai-message"><span class="speaker">가온</span><p>당신의 명령만 듣고 움직일게요. 한 번에 여러 행동을 작성할 수도 있어요.</p></div>
+      </div>
+    </dialog>
+
+    <dialog id="profileDialog" class="profile-dialog">
+      <form id="profileForm" method="dialog">
+        <span class="dialog-symbol">ㄱ</span>
+        <span class="eyebrow">모험 기록 생성</span>
+        <h1>가온이 당신을<br />뭐라고 부르면 될까요?</h1>
+        <p>이름과 진행 상황은 이 브라우저에만 안전하게 저장됩니다.</p>
+        <label for="nameInput">모험가 이름</label>
+        <input id="nameInput" maxlength="12" autocomplete="nickname" placeholder="2~12자로 입력" required />
+        <button class="primary-button wide" type="submit">기억 속으로 들어가기</button>
+      </form>
+    </dialog>
+
+    <script src="config.js"></script>
+    <script src="game.js"></script>
+  </body>
+</html>
