@@ -2,8 +2,10 @@ import {createServer} from 'node:http';
 import {readFile,stat} from 'node:fs/promises';
 import {extname,join,normalize} from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {loadEnvFile} from 'node:process';
 
 const ROOT=fileURLToPath(new URL('.',import.meta.url));
+try{loadEnvFile(join(ROOT,'.env'));}catch(error){if(error?.code!=='ENOENT')throw error;}
 const PORT=Number(process.env.PORT||8765);
 const MODEL='upstage/solar-pro4';
 const MIME={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json; charset=utf-8','.svg':'image/svg+xml'};

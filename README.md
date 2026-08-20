@@ -12,12 +12,14 @@ python3 -m http.server 8080
 
 브라우저에서 `http://localhost:8080`을 엽니다. 정적 파일만 사용하므로 그대로 GitHub Pages에 배포할 수 있습니다.
 
+로컬 Node 서버는 프로젝트 루트의 `.env`를 시작할 때 자동으로 불러옵니다. `.env.example`을 참고해 `.env`에 키를 넣으면 매번 터미널 환경 변수를 지정할 필요가 없습니다. `.env`는 Git에서 제외됩니다.
+
 ## 가온 AI 연결
 
 OpenRouter 키는 브라우저나 GitHub 저장소에 넣지 않고 서버 환경 변수로만 설정합니다. 노출된 키는 폐기하고 새 키를 발급한 후 실행하세요.
 
 ```bash
-OPENROUTER_API_KEY="새로_발급한_키" node server.mjs
+node server.mjs
 ```
 
 브라우저에서 `http://127.0.0.1:8765`를 엽니다. 서버는 `upstage/solar-pro4`를 호출하고 JSON Schema로 제한된 게임 행동만 반환합니다.
@@ -54,6 +56,8 @@ npm run secret
 변수를 저장한 뒤 **Actions → Deploy GitHub Pages → Run workflow**를 실행하면 AI 모드로 다시 배포됩니다. Pages 워크플로는 이 공개 주소만 정적 `config.js`에 주입하며, 주소가 없을 때는 자동으로 데모 모드를 유지합니다.
 
 Worker는 운영 GitHub Pages 주소와 로컬 개발 주소만 CORS로 허용하고, 50자 제한·허용된 행동 목록·분당 요청 제한·25초 제한 시간을 서버에서도 검사합니다.
+
+Worker를 로컬에서 AI와 함께 테스트할 때는 `worker/.dev.vars.example`을 참고해 Git에서 제외된 `worker/.dev.vars`에 키를 설정한 후 `npm run dev`를 실행합니다.
 
 ## GitHub Pages 최소 데모
 
