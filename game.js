@@ -70,7 +70,7 @@ ui.commandForm.addEventListener('submit',async e=>{
   addMessage('user',text); ui.input.value='';ui.input.dispatchEvent(new Event('input'));
   if(commandsUsed>=commandLimit){showToast('이 스테이지의 실행 횟수를 모두 사용했습니다.');return;}
   const sendButton=ui.commandForm.querySelector('.run-button');commandsUsed++;updateCommandLimit();
-  sendButton.disabled=true;ui.state.textContent='Solar 4가 작전을 이해하고 있어요';ui.connection.textContent='생각 중';
+  sendButton.disabled=true;ui.state.textContent='가온이 작전을 이해하고 있어요';ui.connection.textContent='가온 THINK';
   pendingPlan=validatePlan(await interpretWithAI(text));
   renderPlan(pendingPlan);executePlan();sendButton.disabled=commandsUsed>=commandLimit;
 });
@@ -111,7 +111,7 @@ const ACTION_LABELS={
   climb:'설치한 사다리를 타고 높은 곳으로 이동',goal:'안전한 길을 따라 기억 조각까지 이동'
 };
 async function interpretWithAI(text){
-  if(DEMO_MODE){const plan=interpret(text);plan.source='demo';ui.connection.textContent='Pages 데모';setAiStatus('online','Pages 데모 모드');return plan;}
+  if(DEMO_MODE){const plan=interpret(text);plan.source='demo';ui.connection.textContent='가온 DEMO';setAiStatus('online','가온 DEMO');return plan;}
   const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),30000);
   try{
     const response=await fetch(`${API_BASE}/api/interpret`,{method:'POST',headers:{'Content-Type':'application/json'},signal:controller.signal,body:JSON.stringify({
@@ -122,15 +122,15 @@ async function interpretWithAI(text){
     const actions=(Array.isArray(data.actions)?data.actions:[]).filter(a=>a&&ACTION_LABELS[a.type]).slice(0,8).map(a=>({type:a.type,label:ACTION_LABELS[a.type]}));
     const notes=Array.isArray(data.notes)?data.notes.filter(n=>typeof n==='string').slice(0,3):[];
     if(typeof data.reply==='string'&&data.reply.trim())addMessage('ai',data.reply.trim().slice(0,240));
-    ui.connection.textContent='Solar 4';
-    setAiStatus('online','Solar 4 연결됨');
+    ui.connection.textContent='가온 ON';
+    setAiStatus('online','가온 ON');
     if(!actions.length&&!notes.length)notes.push('실행할 수 있는 행동을 찾지 못했어요. 목적지와 사용할 아이템을 조금 더 구체적으로 알려 주세요.');
     return {actions,notes,source:'ai'};
   }catch(error){
     const fallback=interpret(text);fallback.source='local';
-    fallback.notes.push(error.name==='AbortError'?'Solar 4 응답 시간이 초과되어 기본 해석기로 전환했습니다.':'Solar 4 연결이 일시적으로 실패해 기본 해석기로 전환했습니다. 다시 실행하면 AI 연결을 재시도합니다.');
-    ui.connection.textContent='기본 모드';
-    setAiStatus('offline','AI 연결 재시도 중');
+    fallback.notes.push(error.name==='AbortError'?'가온의 응답 시간이 초과되어 기본 해석기로 전환했습니다.':'가온과의 연결이 일시적으로 실패해 기본 해석기로 전환했습니다. 다음 실행 때 다시 연결합니다.');
+    ui.connection.textContent='가온 OFF';
+    setAiStatus('offline','가온 OFF');
     return fallback;
   }finally{clearTimeout(timeout);}
 }
@@ -157,10 +157,10 @@ function validatePlan(plan){
 }
 function setAiStatus(mode,label){ui.globalAiStatus.className=`global-ai-status ${mode}`;ui.globalAiStatus.innerHTML='<i></i> '+label;}
 async function checkAiHealth(silent=false){
-  if(DEMO_MODE){setAiStatus('online','Pages 데모 모드');ui.connection.textContent='로컬 해석';return;}
-  if(!silent)setAiStatus('checking','AI 확인 중');
-  try{const response=await fetch(`${API_BASE}/api/health`,{cache:'no-store'});if(!response.ok)throw new Error();const data=await response.json();if(!data.configured){setAiStatus('offline','API 키 확인 필요');ui.connection.textContent='키 없음';}else{setAiStatus('online','Solar 4 연결됨');ui.connection.textContent='Solar 4';}}
-  catch{setAiStatus('offline','AI 서버 연결 끊김');ui.connection.textContent='기본 모드';}
+  if(DEMO_MODE){setAiStatus('online','가온 DEMO');ui.connection.textContent='가온 DEMO';return;}
+  if(!silent)setAiStatus('checking','가온 연결 중');
+  try{const response=await fetch(`${API_BASE}/api/health`,{cache:'no-store'});if(!response.ok)throw new Error();const data=await response.json();if(!data.configured){setAiStatus('offline','가온 설정 필요');ui.connection.textContent='가온 OFF';}else{setAiStatus('online','가온 ON');ui.connection.textContent='가온 ON';}}
+  catch{setAiStatus('offline','가온 OFF');ui.connection.textContent='가온 OFF';}
 }
 function renderPlan(plan){
   const list=plan.actions.length?`<ol>${plan.actions.map(a=>`<li>${a.label}</li>`).join('')}</ol>`:'<p>실행할 수 있는 행동이 없습니다.</p>';

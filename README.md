@@ -12,7 +12,7 @@ python3 -m http.server 8080
 
 브라우저에서 `http://localhost:8080`을 엽니다. 정적 파일만 사용하므로 그대로 GitHub Pages에 배포할 수 있습니다.
 
-## Solar Pro 4 연결
+## 가온 AI 연결
 
 OpenRouter 키는 브라우저나 GitHub 저장소에 넣지 않고 서버 환경 변수로만 설정합니다. 노출된 키는 폐기하고 새 키를 발급한 후 실행하세요.
 
@@ -40,11 +40,11 @@ API 키는 `config.js`가 아니라 AI 서버의 비밀 환경 변수에만 저�
 cd worker
 npm install
 npx wrangler login
-npm run secret
 npm run deploy
+npm run secret
 ```
 
-`npm run secret`가 입력을 기다리면 새 OpenRouter 키를 붙여 넣습니다. 키는 소스나 GitHub Pages에 포함되지 않고 Cloudflare의 암호 저장소에만 보관됩니다. 배포 결과로 출력된 `https://...workers.dev` 주소를 복사합니다.
+먼저 Worker를 배포한 뒤 `npm run secret`가 입력을 기다리면 OpenRouter 키를 붙여 넣습니다. 키는 소스나 GitHub Pages에 포함되지 않고 Cloudflare의 암호 저장소에만 보관됩니다. 배포 결과로 출력된 `https://...workers.dev` 주소를 복사합니다.
 
 그다음 GitHub 저장소의 **Settings → Secrets and variables → Actions → Variables**에서 다음 공개 변수를 만듭니다.
 
